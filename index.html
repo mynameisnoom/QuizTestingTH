@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>แบบฝึกหัดคณิตศาสตร์ - เลือกรูปแบบโจทย์</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
+            padding: 20px;
+            text-align: center;
+        }
+        .exercise {
+            background-color: #fff;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        input {
+            font-size: 18px;
+            width: 80px;
+            text-align: center;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+        }
+        select {
+            padding: 5px;
+            font-size: 16px;
+        }
+        #result {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        @media (max-width: 600px) {
+            input {
+                width: 60px;
+            }
+            button, select {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<h1>แบบฝึกหัดคณิตศาสตร์</h1>
+<label for="type">เลือกรูปแบบโจทย์:</label>
+<select id="type">
+    <option value="simple">แบบธรรมดา (11+22)</option>
+    <option value="bracket">แบบมีวงเล็บ (50 - (10+4))</option>
+</select>
+<button onclick="generateExercises()">สร้างโจทย์</button>
+<button onclick="checkAnswers()">ตรวจคำตอบ</button>
+
+<div id="exercises"></div>
+<div id="result"></div>
+
+<script>
+function randomTwoDigit() {
+    return Math.floor(Math.random() * 90) + 10; // เลข 2 หลัก 10-99
+}
+
+// สร้างโจทย์แบบธรรมดา
+function createSimpleExercise() {
+    const num1 = randomTwoDigit();
+    const num2 = randomTwoDigit();
+    const op = Math.random() > 0.5 ? '+' : '-';
+
+    // ถ้าเป็นลบ ต้องเช็คว่าคำตอบไม่ติดลบ
+    if (op === '-' && num1 < num2) {
+        return createSimpleExercise();
+    }
+
+    const answer = op === '+' ? num1 + num2 : num1 - num2;
+    return {
+        text: `${num1} ${op} ${num2} = `,
+        answer
+    };
+}
+
+// สร้างโจทย์แบบมีวงเล็บ
+function createBracketExercise() {
+    const outerNum = randomTwoDigit();
+    const innerNum1 = randomTwoDigit();
+    const innerNum2 = randomTwoDigit();
+    const innerOp = Math.random() > 0.5 ? '+' : '-';
+
+    // หาผลลัพธ์ในวงเล็บ
+    let innerResult = innerOp === '+' ? innerNum1 + innerNum2 : innerNum1 - innerNum2;
+    if (innerResult < 0) return createBracketExercise();  // ห้ามติดลบในวงเล็บ
+
+    const outerOp = Math.random() > 0.5 ? '+' : '-';
+    let finalResult = outerOp === '+' ? outerNum + innerResult : outerNum - innerResult;
+
+    if (finalResult < 0) return createBracketExercise();  // ห้ามติดลบผลลัพธ์สุดท้าย
+
+    return {
+        text: `${outerNum} ${outerOp} (${innerNum1} ${innerOp} ${innerNum2}) = `,
+        answer: finalResult
+    };
+}
+
+function generateExercises() {
+    const type = document.getElementById('type').value;
+    const exercisesDiv = document.getElementById('exercises');
+    exercisesDiv.innerHTML = '';  // ล้างเก่า
+
+    for (let i = 0; i < 10; i++) {
+        let exercise;
+        if (type === 'simple') {
+            exercise = createSimpleExercise();
+        } else {
+            exercise = createBracketExercise();
+        }
+
+        const div = document.createElement('div');
+        div.className = 'exercise';
+        div.innerHTML = `
+            ${i+1}. ${exercise.text}
+            <input type="number" class="answer" data-answer="${exercise.answer}">
+        `;
+        exercisesDiv.appendChild(div);
+    }
+
+    document.getElementById('result').innerText = '';  // เคลียร์ผลเก่า
+}
+
+function checkAnswers() {
+    const inputs = document.querySelectorAll('.answer');
+    let correctCount = 0;
+
+    inputs.forEach(input => {
+        const userAnswer = parseInt(input.value, 10);
+        const correctAnswer = parseInt(input.getAttribute('data-answer'), 10);
+
+        if (userAnswer === correctAnswer) {
+            correctCount++;
+            input.style.backgroundColor = '#c8f7c5';  // สีเขียวถ้าถูก
+        } else {
+            input.style.backgroundColor = '#f7c5c5';  // สีแดงถ้าผิด
+        }
+    });
+
+    document.getElementById('result').innerText = `คุณตอบถูก ${correctCount} จาก 10 ข้อ`;
+}
+
+// สร้างโจทย์ทันทีตอนโหลดหน้าเว็บ
+generateExercises();
+</script>
+
+</body>
+</html>
