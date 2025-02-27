@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>แบบฝึกหัดออนไลน์</title>
+    <title>แบบฝึกหัดคณิตศาสตร์</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -32,72 +32,46 @@
 </head>
 <body>
 
-<h1>แบบฝึกหัดออนไลน์</h1>
+<h1>แบบฝึกหัดคณิตศาสตร์</h1>
 
-<div id="subjectSelect">
-    <label>เลือกวิชา:</label>
-    <select id="subject">
-        <option value="math">คณิตศาสตร์</option>
-        <option value="thai">ภาษาไทย</option>
-        <option value="science">วิทยาศาสตร์</option>
-    </select>
-    <button onclick="startExercise()">เริ่มทำแบบฝึกหัด</button>
-</div>
-
-<div id="mathSection" style="display:none;">
-    <h2>แบบฝึกหัดคณิตศาสตร์</h2>
+<div id="selectType">
     <label>เลือกรูปแบบโจทย์:</label>
     <select id="mathType">
         <option value="simple">แบบธรรมดา (11+22)</option>
         <option value="bracket">แบบมีวงเล็บ (50 - (10+4))</option>
     </select>
-    <button onclick="generateMathExercises()">สร้างโจทย์</button>
+    <button onclick="startMathExercise()">เริ่มทำแบบฝึกหัด</button>
+</div>
+
+<div id="mathSection" style="display:none;">
+    <h2>แบบฝึกหัดคณิตศาสตร์</h2>
+    <button onclick="generateMathExercises()">สร้างโจทย์ใหม่</button>
     <button onclick="checkMathAnswers()">ตรวจคำตอบ</button>
-    <button onclick="goBack()">กลับไปเลือกวิชา</button>
+    <button onclick="goBack()">กลับไปเลือกประเภทโจทย์</button>
     <div id="mathExercises"></div>
     <div id="mathResult"></div>
 </div>
 
-<div id="thaiSection" style="display:none;">
-    <h2>แบบฝึกหัดภาษาไทย: มาตราตัวสะกด</h2>
-    <button onclick="generateThaiExercises()">สร้างโจทย์</button>
-    <button onclick="checkThaiAnswers()">ตรวจคำตอบ</button>
-    <button onclick="goBack()">กลับไปเลือกวิชา</button>
-    <div id="thaiExercises"></div>
-    <div id="thaiResult"></div>
-</div>
-
 <script>
+// === กลับไปหน้าเลือกประเภทโจทย์ ===
 function goBack() {
-    document.getElementById('subjectSelect').style.display = 'block';
+    document.getElementById('selectType').style.display = 'block';
     document.getElementById('mathSection').style.display = 'none';
-    document.getElementById('thaiSection').style.display = 'none';
 }
 
-function startExercise() {
-    const subject = document.getElementById('subject').value;
-
-    document.getElementById('subjectSelect').style.display = 'none';
-    document.getElementById('mathSection').style.display = 'none';
-    document.getElementById('thaiSection').style.display = 'none';
-
-    if (subject === 'math') {
-        document.getElementById('mathSection').style.display = 'block';
-        generateMathExercises();
-    } else if (subject === 'thai') {
-        document.getElementById('thaiSection').style.display = 'block';
-        generateThaiExercises();
-    } else {
-        alert('วิชานี้ยังไม่มีแบบฝึกหัด');
-        goBack();
-    }
+// === เริ่มทำแบบฝึกหัด ===
+function startMathExercise() {
+    document.getElementById('selectType').style.display = 'none';
+    document.getElementById('mathSection').style.display = 'block';
+    generateMathExercises();
 }
 
-// === คณิตศาสตร์ ===
+// === สุ่มเลข 2 หลัก ===
 function randomTwoDigit() {
-    return Math.floor(Math.random() * 90) + 10;
+    return Math.floor(Math.random() * 90) + 10;  // 10-99
 }
 
+// === สร้างโจทย์ธรรมดา ===
 function createSimpleMath() {
     const num1 = randomTwoDigit();
     const num2 = randomTwoDigit();
@@ -107,6 +81,7 @@ function createSimpleMath() {
     return { text: `${num1} ${op} ${num2}`, answer: op === '+' ? num1 + num2 : num1 - num2 };
 }
 
+// === สร้างโจทย์มีวงเล็บ ===
 function createBracketMath() {
     const outer = randomTwoDigit();
     const inner1 = randomTwoDigit();
@@ -123,6 +98,7 @@ function createBracketMath() {
     return { text: `${outer} ${outerOp} (${inner1} ${innerOp} ${inner2})`, answer: result };
 }
 
+// === สร้างโจทย์ ===
 function generateMathExercises() {
     const type = document.getElementById('mathType').value;
     const exercisesDiv = document.getElementById('mathExercises');
@@ -135,6 +111,7 @@ function generateMathExercises() {
     document.getElementById('mathResult').innerText = '';
 }
 
+// === ตรวจคำตอบ ===
 function checkMathAnswers() {
     const inputs = document.querySelectorAll('.mathAnswer');
     let score = 0;
@@ -147,43 +124,6 @@ function checkMathAnswers() {
         }
     });
     document.getElementById('mathResult').innerText = `คุณได้ ${score}/10 คะแนน`;
-}
-
-// === ภาษาไทย - มาตราตัวสะกด ===
-const thaiExercises = [
-    { word: 'จักรยาน', correct: 'แม่กก' },
-    { word: 'ดอกไม้', correct: 'แม่กก' },
-    { word: 'ลำไย', correct: 'แม่กง' },
-    { word: 'ภาพวาด', correct: 'แม่กด' },
-    { word: 'สนาม', correct: 'แม่กม' },
-    { word: 'เด็กน้อย', correct: 'แม่กก' },
-    { word: 'ตลาด', correct: 'แม่กด' },
-    { word: 'นาฬิกา', correct: 'แม่กน' },
-    { word: 'ปลาทู', correct: 'แม่กง' },
-    { word: 'แม่น้ำ', correct: 'แม่กม' }
-];
-
-function generateThaiExercises() {
-    const exercisesDiv = document.getElementById('thaiExercises');
-    exercisesDiv.innerHTML = '';
-    thaiExercises.sort(() => 0.5 - Math.random()).slice(0, 5).forEach((ex, i) => {
-        exercisesDiv.innerHTML += `<div class="exercise">${i+1}. คำว่า "${ex.word}" อยู่ในมาตรา <input type="text" class="thaiAnswer" data-answer="${ex.correct}"></div>`;
-    });
-    document.getElementById('thaiResult').innerText = '';
-}
-
-function checkThaiAnswers() {
-    const inputs = document.querySelectorAll('.thaiAnswer');
-    let score = 0;
-    inputs.forEach(input => {
-        if (input.value.trim() === input.dataset.answer) {
-            input.style.backgroundColor = 'lightgreen';
-            score++;
-        } else {
-            input.style.backgroundColor = 'lightcoral';
-        }
-    });
-    document.getElementById('thaiResult').innerText = `คุณได้ ${score}/5 คะแนน`;
 }
 </script>
 
